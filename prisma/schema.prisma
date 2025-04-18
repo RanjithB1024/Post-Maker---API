@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model ImageFile {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  filename   String
+  fileId     String    @db.ObjectId
+  bucketName String
+  uploadDate DateTime
+  comments   Comment[]
+}
+
+model Comment {
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  imageFileId       String   @db.ObjectId
+  imageFile         ImageFile @relation(fields: [imageFileId], references: [id])
+  contentOffsetSeconds Int
+  msg              String
+  createdAt        DateTime
+}
+
