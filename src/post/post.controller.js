@@ -82,11 +82,11 @@ exports.upload = async (req, res) => {
           createdDate: presentDate,
           imagesId: videoFileReturn[0]?.imagesid,
           description: descriptionWithEmojis,
-          createdBy: reqBodyObj.createdBy,
-          appName: reqBodyObj.appName,
-          from:reqBodyObj.from,
-          email:reqBodyObj.email,
-          active:constants.STATUS.FALSE
+          // createdBy: reqBodyObj.createdBy,
+          // appName: reqBodyObj.appName,
+          // from:reqBodyObj.from,
+          // email:reqBodyObj.email,
+          // active:constants.STATUS.FALSE
           };
 
         let postData = await postService.create(req.app.locals.database, body);
@@ -118,28 +118,29 @@ exports.fetchPost = async (req, res) => {
 
   const { from, appName, email, createdBy, _id, page, search,active } = req.query;  
   try {
+    console.log("req.query",req.query);
      let limit = constants.NUMBERS.LIMIT || 10; 
     let offset = page ? (parseInt(page) - 1) * limit : 0;
     const currentPage = parseInt(page, 10) || 1; 
- 
-    let baseQuery = {
-      ...(appName && { appName }),
-      ...(search
-        ? {
-            $or: [
-              { createdBy: { $regex: new RegExp(search, 'i') } }, 
-              { email: { $regex: new RegExp(search, 'i') } }, 
-            ],
-          }
-        : {}),
-      ...(from && { from }),
-      ...(_id && { _id: ObjectId.isValid(_id) ? new ObjectId(_id) : _id }),
-      ...(createdBy && {createdBy :{ $regex: new RegExp(createdBy, 'i') } }),
-    };
+ let baseQuery;
+    // let baseQuery = {
+    //   ...(appName && { appName }),
+    //   ...(search
+    //     ? {
+    //         $or: [
+    //           { createdBy: { $regex: new RegExp(search, 'i') } }, 
+    //           { email: { $regex: new RegExp(search, 'i') } }, 
+    //         ],
+    //       }
+    //     : {}),
+    //   ...(from && { from }),
+    //   ...(_id && { _id: ObjectId.isValid(_id) ? new ObjectId(_id) : _id }),
+    //   // ...(createdBy && {createdBy :{ $regex: new RegExp(createdBy, 'i') } }),
+    // };
 
-    if(active){
-      baseQuery.active = active === constants.POSTS.ACTIVE ? true : (active === constants.POSTS.INACTIVE ? false : constants.POSTS.UNDEFINED);
-   }
+  //   if(active){
+  //     baseQuery.active = active === constants.POSTS.ACTIVE ? true : (active === constants.POSTS.INACTIVE ? false : constants.POSTS.UNDEFINED);
+  //  }
     const totalRecords = await postService.countDocuments(req.app.locals.database, baseQuery);
     const data = await postService.readWithPagination(
       req.app.locals.database,
@@ -164,22 +165,23 @@ exports.fetchPost = async (req, res) => {
         };
       })
     );
-    const groupedData = {
-      suggestions: [],
-      bugs: [],
-    };
-      processedData.forEach((item) => {
-      if (item.from && item.from.toLowerCase() === constants.POSTS.SUGGESTIONS) {
-        groupedData.bugs.push(item);
-      } else if (item.from && item.from.toLowerCase() === constants.POSTS.BUG) {
-        groupedData.bugs.push(item);
-      }
-    });
-    if(groupedData.bugs.length>0){
+    console.log("processedData",processedData)
+    // const groupedData = {
+    //   suggestions: [],
+    //   bugs: [],
+    // };
+    //   processedData.forEach((item) => {
+    //   if (item.from && item.from.toLowerCase() === constants.POSTS.SUGGESTIONS) {
+    //     groupedData.bugs.push(item);
+    //   } else if (item.from && item.from.toLowerCase() === constants.POSTS.BUG) {
+    //     groupedData.bugs.push(item);
+    //   }
+    // });
+    if(processedData.length>0){
     res.json({
       status: httpStatus.OK,
       response: {
-        result: groupedData,
+        result: processedData,
         totalPages: Math.ceil(totalRecords / limit), 
         currentPage: currentPage,
         limit: limit,
@@ -193,6 +195,7 @@ exports.fetchPost = async (req, res) => {
       });
      }
   } catch (error) {
+    console.log("error",error)
     exception(res);
   }
 };
