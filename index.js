@@ -5,10 +5,12 @@ const debug = require("debug")("credopay-api");
 const http = require("http");
 const port = normalizePort(process.env.PORT || "1030");
 app.set("port", port);
+const cors = require('cors')
 const server = http.createServer(app);
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
+app.use(cors())
 function normalizePort(val) {
   const port = parseInt(val, 10);
   if (isNaN(port)) {
