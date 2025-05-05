@@ -4,6 +4,7 @@
   "description": "linkedin",
   "main": "index.js",
   "scripts": {
+    "postinstall": "node -v",
     "start": "nodemon index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
