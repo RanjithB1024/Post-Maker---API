@@ -1,5 +1,5 @@
 const httpStatus = require("http-status");
-const constants = require("./src/constants/constants");
+const constants = require("./src/constants/Constants");
 
 exports.handleException = (statusCode,message,res) => {
     const error = {
