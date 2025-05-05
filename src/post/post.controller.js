@@ -2,7 +2,7 @@ const httpStatus = require("http-status");
 const { ObjectId } = require("mongodb");
 require("dotenv").config();
 const postService = require("../post/post.service");
-const constants = require("../constants/constants");
+const constants = require("../constants/Constants");
 const crudservice = require("../services/crud-service");
 var stream = require("stream");
 const { GridFSBucket } = require("mongodb");
